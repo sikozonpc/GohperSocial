@@ -12,7 +12,7 @@ func NewMockStore() Storage {
 	}
 }
 
-type MockUserStore struct {}
+type MockUserStore struct{}
 
 func (m *MockUserStore) Create(ctx context.Context, tx *sql.Tx, u *User) error {
 	return nil
