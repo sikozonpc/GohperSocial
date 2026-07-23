@@ -4,7 +4,7 @@ import "embed"
 
 const (
 	FromName            = "GopherSocial"
-	maxRetires          = 3
+	maxRetries          = 3
 	UserWelcomeTemplate = "user_invitation.tmpl"
 )
 
