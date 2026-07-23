@@ -6,6 +6,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
@@ -56,9 +57,12 @@ func (m *SendGridMailer) Send(templateFile, username, email string, data any, is
 		},
 	})
 
-	var retryErr error
+	var (
+		response *rest.Response
+		retryErr error
+	)
 	for i := 0; i < maxRetires; i++ {
-		response, retryErr := m.client.Send(message)
+		response, retryErr = m.client.Send(message)
 		if retryErr != nil {
 			// exponential backoff
 			time.Sleep(time.Second * time.Duration(i+1))
