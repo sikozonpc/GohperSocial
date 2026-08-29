@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -154,7 +155,12 @@ func (app *application) getUser(ctx context.Context, userID int64) (*store.User,
 func (app *application) RateLimiterMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if app.config.rateLimiter.Enabled {
-			if allow, retryAfter := app.rateLimiter.Allow(r.RemoteAddr); !allow {
+			// RemoteAddr is "host:port" (for test) — extract just the host
+			ip, _, err := net.SplitHostPort(r.RemoteAddr)
+			if err != nil {
+				ip = r.RemoteAddr
+			}
+			if allow, retryAfter := app.rateLimiter.Allow(ip); !allow {
 				app.rateLimitExceededResponse(w, r, retryAfter.String())
 				return
 			}
